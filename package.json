@@ -9,12 +9,12 @@
   },
   "keywords": [
     "cli",
-		"argv",
+    "argv",
     "minimist"
   ],
-	"scripts": {
-		"test": "mocha"
-	},
+  "scripts": {
+    "test": "mocha"
+  },
   "author": "dmitrymatveev <dmitry.matveev.nz@gmail.com>",
   "license": "ISC",
   "bugs": {
@@ -25,6 +25,7 @@
     "minimist": "^1.2.0"
   },
   "devDependencies": {
+    "mocha": "^2.4.5",
     "should": "^8.3.0"
   }
 }
