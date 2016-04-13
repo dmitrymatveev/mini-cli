@@ -1,0 +1,30 @@
+{
+  "name": "mini-cli",
+  "version": "1.0.0",
+  "description": "Maps command line arguments to actions.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmitrymatveev/mini-cli.git"
+  },
+  "keywords": [
+    "cli",
+		"argv",
+    "minimist"
+  ],
+	"scripts": {
+		"test": "mocha"
+	},
+  "author": "dmitrymatveev <dmitry.matveev.nz@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dmitrymatveev/mini-cli/issues"
+  },
+  "homepage": "https://github.com/dmitrymatveev/mini-cli#readme",
+  "dependencies": {
+    "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "should": "^8.3.0"
+  }
+}
