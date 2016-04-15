@@ -1,5 +1,7 @@
 "use strict";
 
+var isNullOrUndefined = require('util').isNullOrUndefined;
+var isBoolean = require('util').isBoolean;
 var minimist = require('minimist');
 
 /**
@@ -36,6 +38,7 @@ class MiniCli {
 		p.commands.set(name, {
 			name,
 			action: null,
+      args: {},
 			options: {}
 		});
 		return this;
@@ -63,12 +66,38 @@ class MiniCli {
 	}
 
 	/**
+   * Define arguments list.
+   * [name][=default]
+   *
+   * Arguments can only be marked default only after all compulsory arguments.
+   * Last argument can be a callback function invoked when argument(s) is encountered.
+   *
+   * @param {...string}
+   * @return {MiniCli}
+   */
+  args() {
+    let curr = this._current;
+    let args = toCallbackFunction.apply(this, arguments);
+
+    var withDefault = false;
+    for(let arg of args.list) {
+      let def = createDefinition(curr, 'args', arg, args.callback);
+      if (withDefault && !def.default) {
+        throw 'invalid_command: optional argument must be in the last positions';
+      }
+      withDefault = !isNullOrUndefined(def.default);
+    }
+  }
+
+	/**
 	 * Defines options list.
 	 * [!]<name>[=default value]
 	 *
 	 * ! - marks argument to be required
 	 * name - can be a char or a string
-	 * value - sets default string value
+	 * default value - sets default string value
+   *
+   * Last argument can be a callback function invoked when option(s) is encountered.
 	 *
 	 * @param {...string}
 	 * @returns {MiniCli}
@@ -101,50 +130,72 @@ class MiniCli {
 		let context = {};
 
 		if (!command) throw 'Unknown command';
-		else if (!command.action) throw 'Invalid command object';
+		else if (!command.action) throw 'invalid_command: no action callback';
 
-		let err = [];
+    let args = input._.splice(1);
+    let keys = Object.keys(command.args);
+    let parsedArgs = null;
 
-		let options = Object.keys(command.options).reduce(function (base, key) {
-			let options = command.options[key];
-			let value = input[key];
+    let i = -1;
+    let length = !keys.length ? 0 : Math.max(keys.length, args.length);
+    while(++i < length) {
+      parsedArgs = parsedArgs || {_:[]};
+      let val = args[i];
+      let com = keys.length > i ? command.args[keys[i]] : null;
 
-			if (value === undefined && options.required) {
-				err.push(new Error(`Missing command argument: ${key}`));
-			}
-			if (value !== undefined) {
-				base[key] = value;
-			}
-			else if (options.default !== undefined) {
-				base[key] = options.default;
-			}
+      if (com === null) parsedArgs._.push(val);
+      else if (isNullOrUndefined(val) && isNullOrUndefined(com.default)) {
+        return new Error(`Missing command argument{${i}}: ${com.name}`);
+      }
+      else  {
+        parsedArgs[com.name] = !isNullOrUndefined(val) ? val : com.default;
+      }
+    }
 
-			return base;
-		}, {});
+    let parsedOptions = {};
+    for(let key of Object.keys(command.options)) {
+      let options = command.options[key];
+      let value = input[key];
 
-		if (err.length >= 1) {
-			return err[0];
-		}
+      if (value === undefined && options.required) {
+          return new Error(`Missing command flag: ${key}`);
+      }
 
-		for(let key of Object.keys(options)) {
+      if (value !== undefined) {
+        parsedOptions[key] = value;
+      }
+      else if (options.default !== undefined) {
+        parsedOptions[key] = options.default;
+      }
+    }
 
-			let item = options[key];
-			let opt = command.options[key];
+    if (parsedArgs) {
+      for(let key of Object.keys(parsedArgs)) {
+        if (key === '_') continue;
 
+        let opt = command.args[key];
+        if (opt.action) {
+          let result = opt.action(context, parsedArgs[key]);
+
+          if (result && !isBoolean(result) || !!result) {
+            return result;
+          }
+        }
+      }
+    }
+
+		for(let key of Object.keys(parsedOptions)) {
+      let opt = command.options[key];
 			if (opt.action) {
-				let result = opt.action(context, item);
+				let result = opt.action(context, parsedOptions[key]);
 
-				if (result && typeof result !== 'boolean') {
+				if (result && !isBoolean(result) || result) {
 					return result;
 				}
-				else if (!!result) {
-					return null;
-				}
 			}
 		}
 
-		let args = input._.splice(1);
-		return command.action(context, args, options);
+		return command.action(context, parsedArgs || args, parsedOptions);
 	}
 }
 
@@ -161,7 +212,7 @@ function findMatchingCommand (name, commands) {
 function toCallbackFunction () {
 	let args = arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments);
 	return {
-		list: args.length <= 1 ? [args[0]] : args.slice(0, args.length - 1),
+		list: args.filter(n => {return typeof n === 'string'}),
 		callback: typeof args[args.length - 1] === 'function' ? args[args.length -1] : null
 	}
 }
@@ -188,4 +239,6 @@ function createDefinition (root, ref, arg, callback) {
 	dest.required = opt.required;
 	dest.default = opt.defaultValue;
 	dest.action = callback;
+
+  return dest;
 }
