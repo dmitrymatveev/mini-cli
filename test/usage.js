@@ -40,6 +40,50 @@ describe('Usage', function () {
 		cli.parse(['alias']).should.be.ok();
 	});
 
+  it('arguments without definition', function () {
+    var cli = new MiniCli();
+    cli.command('test');
+    cli.action((ctx, args) => {return args});
+    var res = cli.parse(['test', 'foo', 'bar']);
+    res.should.be.an.Array();
+    res.should.have.length(2);
+    res.should.containDeep(['foo', 'bar']);
+  });
+
+  it('arguments with definition', function () {
+    var cli = new MiniCli();
+    cli.command('test');
+    cli.args('first', 'second');
+    cli.action(function (ctx, args) {return args});
+    cli.parse(['test', 'foo', 'boo']).should.deepEqual({_: [], first: 'foo', second: 'boo'});
+  });
+
+  it('default arguments position order', function () {
+    var cli = new MiniCli();
+    cli.command('test');
+    should.throws(function () {
+      cli.args('first=defaultValue', 'second');
+    });
+  });
+
+  it('default argument item value', function () {
+    var cli = new MiniCli();
+    cli.command('test');
+    cli.action(function (ctx, args) {return args});
+
+    cli.args('first', 'second=boo');
+    cli.parse(['test', 'foo']).should.deepEqual({_: [], first: 'foo', second: 'boo'});
+    cli.parse(['test', 'foo', 'boo', 'extra', 'stuff']).should.have.property('_', ['extra', 'stuff']);
+  });
+
+  it('define argument action callback', function () {
+    var cli = new MiniCli();
+    cli.command('test');
+    cli.action(function (ctx, args) {return args});
+    cli.args('first', 'second', (ctx, args) => {return true});
+    cli.parse(['test', 'foo', 'boo']).should.be.ok();
+  });
+
 	it('define command options', function () {
 		var cli = new MiniCli();
 		cli.command('test');
