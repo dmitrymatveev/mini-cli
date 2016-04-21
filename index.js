@@ -87,6 +87,7 @@ class MiniCli {
       }
       withDefault = !isNullOrUndefined(def.default);
     }
+    return this;
   }
 
 	/**
