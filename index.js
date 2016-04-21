@@ -51,7 +51,7 @@ class MiniCli {
 	get _current() {
 		let p = _private.get(this);
 		if (p.current === null) {
-			throw 'Un-initialized command';
+			throw new Error('Un-initialized command');
 		}
 		return p.commands.get(p.current);
 	}
@@ -83,7 +83,7 @@ class MiniCli {
     for(let arg of args.list) {
       let def = createDefinition(curr, 'args', arg, args.callback);
       if (withDefault && !def.default) {
-        throw 'invalid_command: optional argument must be in the last positions';
+        throw new Error('invalid_command: optional argument must be in the last positions');
       }
       withDefault = !isNullOrUndefined(def.default);
     }
@@ -129,8 +129,8 @@ class MiniCli {
 		let command = findMatchingCommand(input._[0], _private.get(this).commands);
 		let context = {};
 
-		if (!command) throw 'Unknown command';
-		else if (!command.action) throw 'invalid_command: no action callback';
+		if (!command) throw new Error('Unknown command');
+		else if (!command.action) throw new Error('invalid_command: no action callback');
 
     let args = input._.splice(1);
     let keys = Object.keys(command.args);
@@ -203,7 +203,7 @@ module.exports = MiniCli;
 
 function findMatchingCommand (name, commands) {
 	for(let key of commands.keys()) {
-		if (name.match(key)) {
+		if (name && name.match(key)) {
 			return commands.get(key);
 		}
 	}
