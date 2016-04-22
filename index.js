@@ -37,12 +37,21 @@ class MiniCli {
 		p.current = name;
 		p.commands.set(name, {
 			name,
+      description: '',
 			action: null,
       args: {},
 			options: {}
 		});
 		return this;
 	}
+
+	/**
+   * @param {string} str
+   */
+  description(str) {
+    this._current.description = str;
+    return this;
+  }
 
 	/**
 	 * @returns {object} command
@@ -198,6 +207,31 @@ class MiniCli {
 
 		return command.action(context, parsedArgs || args, parsedOptions);
 	}
+
+	/**
+   * Returns commands Iterator.<name, description>
+   * @returns {*}
+   */
+  commands() {
+    let values = _private.get(this).commands.values();
+
+    let iterable = {
+      [Symbol.iterator]() { return this; }
+    };
+
+    iterable.next = function () {
+      let next = values.next();
+
+      return next.done ? next : {
+        value: {
+          name: next.value.name,
+          description: next.value.description
+        }
+      }
+    };
+
+    return iterable;
+  }
 }
 
 module.exports = MiniCli;

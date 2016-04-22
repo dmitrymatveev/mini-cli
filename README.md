@@ -39,6 +39,10 @@ Create new cli programme.
 Start new command map. All following method calls would relate to
 this command instance.
 
+#### MiniCli#description(string: description)
+
+Set human readable description.
+
 #### MiniCli#alias(string: name)
 
 Makes an association to the current command map by the different name.
@@ -102,3 +106,7 @@ Register a callback function for the command.
 
 Invoked an callback for the respective `MiniCli#action` callback.
 It's return value is whatever `action` callback returns.
+
+#### MiniCli#commands()
+
+Returns `Iterator.<name, description>` over defined commands.

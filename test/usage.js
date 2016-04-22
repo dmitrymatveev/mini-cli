@@ -128,4 +128,18 @@ describe('Usage', function () {
 		});
 		cli.parse(['test', '-o', 'stuff']).should.have.property('tested', 'stuff');
 	});
+
+  it('provides command iterator', function () {
+    var cli = new MiniCli();
+    cli.command('1').description('first').action(() => {});
+    cli.command('2').description('second').action(() => {});
+
+    var res = [];
+    for(var cmd of cli.commands()) {
+      res.push(cmd);
+    }
+
+    res.should.containEql({name: '1', description: 'first'});
+    res.should.containEql({name: '2', description: 'second'});
+  })
 });
