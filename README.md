@@ -102,10 +102,13 @@ Register a callback function for the command.
 * args - list of arguments
 * options - object with option values
 
-#### MiniCli#parse(array: args)
+#### MiniCli#parse(array: args[, object: context])
 
 Invoked an callback for the respective `MiniCli#action` callback.
 It's return value is whatever `action` callback returns.
+
+It is possible to provide custom context object command action callbacks
+using second argument.
 
 #### MiniCli#commands()
 

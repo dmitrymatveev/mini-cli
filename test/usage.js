@@ -80,7 +80,7 @@ describe('Usage', function () {
     var cli = new MiniCli();
     cli.command('test');
     cli.action(function (ctx, args) {return args});
-    cli.args('first', 'second', (ctx, args) => {return true});
+    cli.args('first', 'second', () => {return true});
     cli.parse(['test', 'foo', 'boo']).should.be.ok();
   });
 
@@ -141,5 +141,14 @@ describe('Usage', function () {
 
     res.should.containEql({id: '1', name: '1', description: 'first'});
     res.should.containEql({id: '2', name: '2', description: 'second'});
-  })
+  });
+
+  it('use custom context', function () {
+    var cli = new MiniCli();
+    cli.command('test').action(function (ctx) {
+      return ctx['custom_context'];
+    });
+
+    cli.parse(['test'], {custom_context: 'here'}).should.equal('here');
+  });
 });

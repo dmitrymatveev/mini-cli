@@ -132,12 +132,13 @@ class MiniCli {
 
 	/**
 	 * @param {Array} argv - Array of string arguments to map into cli actions.
+   * @param {object} [ctx] - Context to use with this command action.
 	 * @returns {*} - proxies action return value
 	 */
-	parse(argv) {
+	parse(argv, ctx) {
 		let input = minimist(argv);
 		let command = findMatchingCommand(input._[0], _private.get(this).commands);
-		let context = {};
+		let context = ctx || {};
 
 		if (!command) throw new Error('Unknown command');
 		else if (!command.action) throw new Error('invalid_command: no action callback');
