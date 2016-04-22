@@ -139,7 +139,7 @@ describe('Usage', function () {
       res.push(cmd);
     }
 
-    res.should.containEql({name: '1', description: 'first'});
-    res.should.containEql({name: '2', description: 'second'});
+    res.should.containEql({id: '1', name: '1', description: 'first'});
+    res.should.containEql({id: '2', name: '2', description: 'second'});
   })
 });

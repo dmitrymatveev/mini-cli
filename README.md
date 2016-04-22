@@ -109,4 +109,9 @@ It's return value is whatever `action` callback returns.
 
 #### MiniCli#commands()
 
-Returns `Iterator.<name, description>` over defined commands.
+Returns `Iterator.<id, name, description>` over defined commands.
+
+* id - Command string match. Value given to a command trigger via `command`
+or `alias` methods.
+* name - Command name, this would match to the value of `command` method.
+* description - Value matching command description.

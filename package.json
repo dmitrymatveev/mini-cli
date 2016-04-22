@@ -1,6 +1,6 @@
 {
   "name": "mini-cli",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Maps command line arguments to actions.",
   "main": "index.js",
   "repository": {

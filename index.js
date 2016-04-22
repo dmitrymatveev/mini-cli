@@ -213,19 +213,20 @@ class MiniCli {
    * @returns {*}
    */
   commands() {
-    let values = _private.get(this).commands.values();
+    let entries = _private.get(this).commands.entries();
 
     let iterable = {
       [Symbol.iterator]() { return this; }
     };
 
     iterable.next = function () {
-      let next = values.next();
+      let next = entries.next();
 
       return next.done ? next : {
         value: {
-          name: next.value.name,
-          description: next.value.description
+          id: next.value[0],
+          name: next.value[1].name,
+          description: next.value[1].description
         }
       }
     };
