@@ -28,6 +28,12 @@ class MiniCli {
 
 	static get MATCH_ANY() {return /./}
 
+	static parse(argv, factory) {
+	  let instance = new MiniCli();
+    factory.call(instance);
+    return instance.parse(argv);
+  }
+
 	/**
 	 * @param name
 	 * @returns {MiniCli}

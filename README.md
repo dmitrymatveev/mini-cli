@@ -30,34 +30,34 @@ string is in the arguments, with just a tad of fluff.
 
 ### Api
 
-#### MiniCli#constructor
+#### MiniCli.constructor
 
 Create new cli programme.
 
-#### MiniCli#command(string: name)
+#### MiniCli.command(string: name)
 
 Start new command map. All following method calls would relate to
 this command instance.
 
-#### MiniCli#description(string: description)
+#### MiniCli.description(string: description)
 
 Set human readable description.
 
-#### MiniCli#alias(string: name)
+#### MiniCli.alias(string: name)
 
 Makes an association to the current command map by the different name.
 
-#### MiniCli#args(...string)
+#### MiniCli.args(...string)
 
 List of arguments(s) expected by this command.
 Last argument can be a `function(ctx, value)` which will be called for each
 encountered argument. Any return value which evaluates to true will break
-execution and cause `MiniCli#parse` to return it at that moment (no other
+execution and cause `MiniCli.parse` to return it at that moment (no other
 arguments will be processed);
 
 Argument definition format: `<argument name>[=default]`
 
-Defining arguments will cause `MiniCli#action` function to receive
+Defining arguments will cause `MiniCli.action` function to receive
 arguments hash `{ _:[], {string:string} }` pairs instead of `string[]`.
 
 __Note:__ "\_: []" - contain arguments not matched by `args()` function;
@@ -72,17 +72,17 @@ __Note:__ "\_: []" - contain arguments not matched by `args()` function;
       console.log(args); {_: {}, first: 'foo'}
     })
 
-#### MiniCli#option(...string)
+#### MiniCli.option(...string)
 
 List of string option(s) expected by this command.
 Last argument can be a `function(ctx, value)` which will be called for each
 encountered argument. Any return value which evaluates to true will break
-execution and cause `MiniCli#parse` to return it at that moment (no other
+execution and cause `MiniCli.parse` to return it at that moment (no other
 arguments will be processed);
 
 Option argument format: `[!]<option name>[=default]`
-* `!` - specifies that the option is required. `MiniCli#parse` would
-return an error object ignoring before invoking `MiniCli#action` callback.
+* `!` - specifies that the option is required. `MiniCli.parse` would
+return an error object ignoring before invoking `MiniCli.action` callback.
 * `<option name>` - name of the option argument
 * `=default` - default value
 
@@ -92,7 +92,7 @@ return an error object ignoring before invoking `MiniCli#action` callback.
         //arguments to the programme
     });
 
-#### MiniCli#action(function: callback)
+#### MiniCli.action(function: callback)
 
 * function(object: context, array: args, object: options);
 
@@ -102,15 +102,19 @@ Register a callback function for the command.
 * args - list of arguments
 * options - object with option values
 
-#### MiniCli#parse(array: args[, object: context])
+#### MiniCli.parse(array: args[, object: context])
 
-Invoked an callback for the respective `MiniCli#action` callback.
+Invoked an callback for the respective `MiniCli.action` callback.
 It's return value is whatever `action` callback returns.
 
 It is possible to provide custom context object command action callbacks
 using second argument.
 
-#### MiniCli#commands()
+#### [static] MiniCli.parse(array: args, function: callback)
+
+Helper function to create and parse arguments array in a single step.
+
+#### MiniCli.commands()
 
 Returns `Iterator.<id, name, description>` over defined commands.
 

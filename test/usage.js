@@ -27,7 +27,7 @@ describe('Usage', function () {
 		cli.action(function () {
 			return true;
 		});
-		cli.parse(['poop']).should.be.ok();
+		cli.parse(['foo']).should.be.ok();
 	});
 
 	it('define command alias', function () {
@@ -151,4 +151,15 @@ describe('Usage', function () {
 
     cli.parse(['test'], {custom_context: 'here'}).should.equal('here');
   });
+
+  it('use convenience function', function () {
+    var res = MiniCli.parse(['foo'], function () {
+      this.command('foo');
+      this.action(function () {
+        return true;
+      });
+    });
+
+    res.should.be.ok();
+  })
 });
